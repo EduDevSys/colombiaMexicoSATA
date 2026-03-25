@@ -43,7 +43,10 @@
     .hidden { display:none !important; }
 
     /* ── A-Scene wrapper ── */
-    #ar-wrap { position:fixed; inset:0; z-index:0; }
+    /* A-Frame NECESITA estar en el DOM desde el inicio para inicializar
+       la cámara. Usamos visibility+opacity en vez de display:none */
+    #ar-wrap { position:fixed; inset:0; z-index:0; visibility:hidden; opacity:0; transition:opacity .3s ease; }
+    #ar-wrap.active { visibility:visible; opacity:1; }
     #ar-wrap a-scene { width:100%; height:100%; }
 
     /* ── Partículas ── */
@@ -244,7 +247,7 @@
        A-FRAME SCENE
        Basado en el ejemplo oficial de MindAR
   ============================================================ -->
-  <div id="ar-wrap" class="hidden">
+  <div id="ar-wrap">
     <a-scene
       mindar-face
       embedded
@@ -603,7 +606,7 @@
   ────────────────────────────────────────── */
   backBtn.addEventListener('click', () => {
     aud.pause(); aud.currentTime = 0;
-    arWrap.classList.add('hidden');
+    arWrap.classList.remove('active');
     hud.classList.add('hidden');
     ff.classList.add('hidden');
     fh.classList.add('hidden');
@@ -674,7 +677,7 @@
   startBtn.addEventListener('click', () => {
     playAud();                          // activa audio (requiere gesto)
     splash.classList.add('hidden');
-    arWrap.classList.remove('hidden');
+    arWrap.classList.add('active');
     hud.classList.remove('hidden');
     ff.classList.remove('hidden');
     fh.classList.remove('hidden');
