@@ -613,36 +613,58 @@
   });
 
   /* ──────────────────────────────────────────
-     TRACKING FACIAL (eventos de A-Frame/MindAR)
+     TRACKING FACIAL — FIX v1.4
+     MindAR A-Frame emite targetFound/targetLost
+     en cada <a-entity mindar-face-target>, NO en <a-scene>.
   ────────────────────────────────────────── */
+  function onFaceFound() {
+    if (faceDet) return;
+    faceDet = true;
+    td.classList.add('on');
+    tl.textContent = '✓ Rostro detectado';
+    tl.classList.add('on');
+    ff.classList.add('on');
+    fh.style.opacity = '0';
+    if (!celebOn) {
+      celebOn = true;
+      window.burst(50);
+      setTimeout(() => { celebOn = false; }, 5000);
+    }
+    playAud();
+  }
+
+  function onFaceLost() {
+    faceDet = false;
+    td.classList.remove('on');
+    tl.textContent = 'Buscando rostro…';
+    tl.classList.remove('on');
+    ff.classList.remove('on');
+    fh.style.opacity = '1';
+  }
+
+  function bindEntities() {
+    // Escuchar en TODAS las entidades con mindar-face-target
+    const entities = document.querySelectorAll('[mindar-face-target]');
+    console.info('SATA AR: entidades face-target:', entities.length);
+    entities.forEach(el => {
+      el.addEventListener('targetFound', onFaceFound);
+      el.addEventListener('targetLost',  onFaceLost);
+    });
+  }
+
   function setupTracking() {
     const scene = document.querySelector('a-scene');
     if (!scene) return;
 
-    // MindAR emite estos eventos en la escena
-    scene.addEventListener('targetFound', () => {
-      if (faceDet) return;
-      faceDet = true;
-      td.classList.add('on');
-      tl.textContent = '✓ Rostro detectado';
-      tl.classList.add('on');
-      ff.classList.add('on');
-      fh.style.opacity = '0';
-      if (!celebOn) {
-        celebOn = true;
-        window.burst(50);
-        setTimeout(() => { celebOn = false; }, 5000);
-      }
-      playAud();
+    // arReady = MindAR terminó de cargar su modelo
+    scene.addEventListener('arReady', () => {
+      console.info('SATA AR: arReady ✓ — vinculando entidades');
+      bindEntities();
     });
 
-    scene.addEventListener('targetLost', () => {
-      faceDet = false;
-      td.classList.remove('on');
-      tl.textContent = 'Buscando rostro…';
-      tl.classList.remove('on');
-      ff.classList.remove('on');
-      fh.style.opacity = '1';
+    // Fallback por si arReady no dispara en algunos navegadores
+    scene.addEventListener('loaded', () => {
+      setTimeout(bindEntities, 800);
     });
   }
 
