@@ -310,8 +310,8 @@
         <a-gltf-model
           id="hat1-model"
           rotation="0 0 0"
-          position="0 1.0 -0.5"
-          scale="0.35 0.35 0.35"
+          position="0 0.55 -0.15"
+          scale="0.28 0.28 0.28"
           src="#hat1"
           visible="true">
         </a-gltf-model>
@@ -417,9 +417,9 @@
       </div>
       <div class="bglow" aria-hidden="true"></div>
     </div>
-    <div class="trk">
+    <div class="trk" id="trk" style="display:none">
       <div id="td"></div>
-      <span id="tl">Buscando rostro…</span>
+      <span id="tl">✓ Rostro detectado</span>
     </div>
   </div>
 
@@ -623,8 +623,9 @@
   function onFaceFound() {
     if (faceDet) return;
     faceDet = true;
+    // Mostrar indicador solo al detectar
+    document.getElementById('trk').style.display = 'inline-flex';
     td.classList.add('on');
-    tl.textContent = '✓ Rostro detectado';
     tl.classList.add('on');
     ff.classList.add('on');
     fh.style.opacity = '0';
@@ -638,8 +639,9 @@
 
   function onFaceLost() {
     faceDet = false;
+    // Ocultar indicador cuando se pierde el rostro
+    document.getElementById('trk').style.display = 'none';
     td.classList.remove('on');
-    tl.textContent = 'Buscando rostro…';
     tl.classList.remove('on');
     ff.classList.remove('on');
     fh.style.opacity = '1';
