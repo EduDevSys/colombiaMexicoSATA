@@ -258,29 +258,13 @@
     >
       <a-assets>
 
-        <!-- Occluder de cabeza (para mayor realismo) -->
+        <!-- Occluder de cabeza -->
         <a-asset-item id="headOcc"
           src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/face-tracking/assets/sparkar/headOccluder.glb">
         </a-asset-item>
 
-        <!--
-          ════════════════════════════════════════════════════
-          SOMBREROS — REEMPLAZA estos src por tus modelos
-          ════════════════════════════════════════════════════
-          Formatos soportados: .gltf / .glb
-          (FBX no es compatible con A-Frame directamente,
-           convierte tu FBX a GLB en: https://www.npmjs.com/package/fbx2gltf
-           o en Blender: Archivo → Exportar → glTF 2.0)
-
-          Para usar tu propio sombrero:
-            src="./assets/models/sombrero.glb"
-        -->
-        <a-asset-item id="hat1"
-          src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/face-tracking/assets/hat/scene.gltf">
-        </a-asset-item>
-        <a-asset-item id="hat2"
-          src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/face-tracking/assets/hat2/scene.gltf">
-        </a-asset-item>
+        <!-- SOMBRERO — coloca tu archivo en assets/models/sombrero.gltf -->
+        <a-asset-item id="sombrero" src="./assets/models/sombrero.gltf"></a-asset-item>
 
       </a-assets>
 
@@ -297,37 +281,19 @@
         </a-gltf-model>
       </a-entity>
 
-      <!--
-        SOMBRERO 1 — anchorIndex 10 = coronilla/frente
-        Ajusta position Y para subir/bajar, scale para tamaño
 
-        ► Para tu sombrero propio:
-          - Cambia src="#hat1" por src="#tuSombrero"
-          - Ajusta position="0 1.0 -0.5" según el modelo
-          - Ajusta scale="0.35 0.35 0.35" según el tamaño
-      -->
+      <!-- SOMBRERO — assets/models/sombrero.gltf -->
       <a-entity mindar-face-target="anchorIndex: 10">
         <a-gltf-model
-          id="hat1-model"
+          id="sombrero-model"
           rotation="0 0 0"
           position="0 0.55 -0.15"
           scale="0.28 0.28 0.28"
-          src="#hat1"
+          src="#sombrero"
           visible="true">
         </a-gltf-model>
       </a-entity>
 
-      <!-- SOMBRERO 2 — visible al presionar el botón de cambio -->
-      <a-entity mindar-face-target="anchorIndex: 10">
-        <a-gltf-model
-          id="hat2-model"
-          rotation="0 0 0"
-          position="0 -0.2 -0.5"
-          scale="0.008 0.008 0.008"
-          src="#hat2"
-          visible="false">
-        </a-gltf-model>
-      </a-entity>
 
     </a-scene>
   </div>
@@ -444,13 +410,7 @@
 
   <!-- Controles -->
   <div id="ctrl" class="hidden">
-    <!-- Cambiar sombrero -->
-    <button class="cb" id="hat-btn" title="Cambiar sombrero" aria-label="Cambiar sombrero">
-      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-        <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-        <path d="M9 10h.01M15 10h.01M9.5 15a3.5 3.5 0 005 0"/>
-      </svg>
-    </button>
+
     <!-- Audio -->
     <button class="cb" id="aud-btn" title="Silenciar / activar música" aria-label="Toggle audio">
       <svg id="ion" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -495,7 +455,6 @@
   const startBtn = document.getElementById('start-btn');
   const audBtn   = document.getElementById('aud-btn');
   const backBtn  = document.getElementById('back-btn');
-  const hatBtn   = document.getElementById('hat-btn');
   const td       = document.getElementById('td');
   const tl       = document.getElementById('tl');
   const aud      = document.getElementById('aud');
@@ -505,7 +464,7 @@
   const cc       = document.getElementById('cc');
 
   /* ── Estado ── */
-  let muted = false, faceDet = false, hatIdx = 0, celebOn = false;
+  let muted = false, faceDet = false, celebOn = false;
 
   /* ──────────────────────────────────────────
      PARTÍCULAS DE FONDO
@@ -591,15 +550,7 @@
   /* ──────────────────────────────────────────
      CAMBIAR SOMBRERO
   ────────────────────────────────────────── */
-  hatBtn.addEventListener('click', () => {
-    hatIdx = hatIdx === 0 ? 1 : 0;
-    const h1 = document.getElementById('hat1-model');
-    const h2 = document.getElementById('hat2-model');
-    if (h1 && h2) {
-      h1.setAttribute('visible', hatIdx === 0);
-      h2.setAttribute('visible', hatIdx === 1);
-    }
-  });
+
 
   /* ──────────────────────────────────────────
      VOLVER
