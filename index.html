@@ -762,7 +762,32 @@
   })();
 
   /* ── Log ── */
-  console.log('%cSATA · WebAR A-Frame v1.6'
+  /* ──────────────────────────────────────────
+     DETENER AUDIO AL SALIR DE LA PÁGINA
+     Cubre: cambio de pestaña, bloqueo de pantalla,
+     navegación hacia atrás, cierre del navegador
+  ────────────────────────────────────────── */
+  function stopAudio() {
+    aud.pause();
+    aud.currentTime = 0;
+  }
+
+  // Página oculta (cambio de pestaña, bloqueo de pantalla)
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) stopAudio();
+  });
+
+  // Navegación hacia atrás / cierre (móvil y desktop)
+  window.addEventListener('pagehide', stopAudio);
+  window.addEventListener('beforeunload', stopAudio);
+
+  // En iOS el evento más confiable es 'blur' en window
+  window.addEventListener('blur', () => {
+    // Solo pausar si el audio está sonando activamente
+    if (!aud.paused) stopAudio();
+  });
+
+  console.log('%cSATA · WebAR A-Frame v1.7'
 ,'color:#f5c842;font-weight:bold;font-size:1rem;');
   console.log('%cPara reemplazar sombrero: cambia src en los <a-asset-item>','color:#00d4aa;font-size:.8rem;');
   </script>
