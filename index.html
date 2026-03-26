@@ -232,7 +232,51 @@
     .cb:hover,.cb:active{background:rgba(245,200,66,.2);border-color:rgba(245,200,66,.5);color:var(--gold);transform:scale(1.1);}
 
     /* Canvas banderas splash */
-    #fc { position:absolute; inset:0; pointer-events:none; z-index:3; }
+    #fc {
+      position: fixed;      /* fixed, no absolute — cubre TODO el viewport */
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    /* Mensaje bienvenida */
+    #welcome-msg {
+      position: fixed;
+      bottom: 110px; left: 50%;
+      transform: translateX(-50%);
+      z-index: 15;
+      pointer-events: none;
+      animation: wmFloat 3s ease-in-out infinite;
+    }
+    @keyframes wmFloat {
+      0%,100% { transform: translateX(-50%) translateY(0); }
+      50%      { transform: translateX(-50%) translateY(-6px); }
+    }
+    .wm-inner {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 22px;
+      background: rgba(6,12,31,.82);
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(245,200,66,.35);
+      border-radius: 99px;
+      box-shadow: 0 4px 24px rgba(0,0,0,.4), 0 0 20px rgba(245,200,66,.15);
+      white-space: nowrap;
+    }
+    .wm-flag { font-size: 1.5rem; animation: wmPulse 1.8s ease-in-out infinite; }
+    .wm-flag:last-child { animation-delay: .4s; }
+    @keyframes wmPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.2)} }
+    .wm-text {
+      font-family: var(--fu);
+      font-size: clamp(.85rem, 3vw, 1rem);
+      font-weight: 600;
+      letter-spacing: .06em;
+      color: #fff;
+      text-align: center;
+      line-height: 1.4;
+    }
+    .wm-text strong { color: var(--gold); }
 
     /* Keyframe compartido */
     @keyframes fu{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
@@ -252,7 +296,7 @@
   ============================================================ -->
   <div id="ar-wrap">
     <a-scene
-      mindar-face
+      mindar-face="filterMinCF:0.001; filterBeta:1000; warmupTolerance:5; missTolerance:5"
       embedded
       color-space="sRGB"
       renderer="colorManagement: true, physicallyCorrectLights"
@@ -437,6 +481,15 @@
     </button>
   </div>
 
+  <!-- Mensaje bienvenida al detectar rostro -->
+  <div id="welcome-msg" class="hidden">
+    <div class="wm-inner">
+      <span class="wm-flag">🇲🇽</span>
+      <p class="wm-text">¡Gracias por tu visita<br>a <strong>Chiapas</strong>!</p>
+      <span class="wm-flag">🇲🇽</span>
+    </div>
+  </div>
+
   <!--
     AUDIO — REEMPLAZA por tu pista colombiana:
     <source src="./assets/audio/colombia.mp3" type="audio/mpeg">
@@ -580,12 +633,13 @@
   function onFaceFound() {
     if (faceDet) return;
     faceDet = true;
-    // Mostrar indicador solo al detectar
     document.getElementById('trk').style.display = 'inline-flex';
     td.classList.add('on');
     tl.classList.add('on');
     ff.classList.add('on');
     fh.style.opacity = '0';
+    // Mostrar mensaje de bienvenida
+    document.getElementById('welcome-msg').classList.remove('hidden');
     if (!celebOn) {
       celebOn = true;
       window.burst(50);
@@ -596,12 +650,13 @@
 
   function onFaceLost() {
     faceDet = false;
-    // Ocultar indicador cuando se pierde el rostro
     document.getElementById('trk').style.display = 'none';
     td.classList.remove('on');
     tl.classList.remove('on');
     ff.classList.remove('on');
     fh.style.opacity = '1';
+    // Ocultar mensaje de bienvenida
+    document.getElementById('welcome-msg').classList.add('hidden');
   }
 
   function bindEntities() {
@@ -656,8 +711,8 @@
     const drops = [];
 
     const resize = () => {
-      W = canvas.width  = canvas.offsetWidth  || innerWidth;
-      H = canvas.height = canvas.offsetHeight || innerHeight;
+      W = canvas.width  = window.innerWidth;
+      H = canvas.height = window.innerHeight;
     };
 
     const mkDrop = () => ({
@@ -707,7 +762,7 @@
   })();
 
   /* ── Log ── */
-  console.log('%cSATA · WebAR A-Frame v1.3'
+  console.log('%cSATA · WebAR A-Frame v1.5'
 ,'color:#f5c842;font-weight:bold;font-size:1rem;');
   console.log('%cPara reemplazar sombrero: cambia src en los <a-asset-item>','color:#00d4aa;font-size:.8rem;');
   </script>
